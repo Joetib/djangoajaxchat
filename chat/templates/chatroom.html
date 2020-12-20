@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background: #666;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 10px 5%;
+            background: #444;
+            color: #888;
+        }
+
+        .messages-area {
+            height: 100%;
+            min-height: 70vh;
+            overflow-y: auto;
+            padding: 4%;
+            background: #555;
+            color: #999;
+            padding-bottom: 10px;
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        #message-input {
+            padding: 20px;
+            width: 100%;
+        }
+
+        #send-btn {
+            padding: 20px 40px;
+            background: gold;
+        }
+        .message.left{
+            text-align: left;
+            color: #aaa;
+        }
+        .message.right {
+            text-align: right;
+            color: #ccc;
+        }
+        .message .content{
+            background: #444;
+            padding: 5px 10px;
+            border-radius: 10px;
+            max-width: 80%;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="header">{{ other_user.username }}</div>
+    <div class="messages-area">
+        {% for message in messages %}
+        <div class="message 
+        {% if message.sender == request.user %}right{% else %}left{% endif %}
+        ">
+            <div class="sent-by">{{ message.sender.username }}</div>
+            <div class="content">{{ message.message }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="input-area">
+        <input type="text" id="message-input">
+        <button id="send-btn">Send</button>
+    </div>
+</body>
+<script>
+    let message_send_btn = document.getElementById("send-btn");
+    let message_input = document.getElementById("message-input");
+    function send_message() {
+        let message = message_input.value;
+        if (message === "") {
+            return;
+        }
+        message_input.value = "";
+        fetch("{% url 'chatroom-ajax' other_user.id %}",
+            {
+                method: "POST",
+                credentials: 'same-origin',
+                headers: {
+                    "Content-Type": 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(message)
+            }
+        ).then(e => e.json()).then(messages => {
+            for (message of messages) {
+                construct_message(message);
+            }
+        });
+    }
+
+    function load_messages() {
+        fetch("{% url 'chatroom-ajax' other_user.id %}")
+            .then(e => e.json())
+            .then(messages => {
+                console.log(messages)
+                for (message of messages) {
+                    construct_message(message);
+                }
+            })
+    }
+
+    function construct_message(message){
+        let messages_container = document.querySelector(".messages-area");
+        let class_name = "left"
+        if (message.sent){
+            class_name = "right"
+        }
+        let div = document.createElement("div");
+        div.classList.add("message", class_name);
+        div.innerHTML = `
+        <div class="sent-by">${ message.sender }</div>
+            <div class="content">${ message.message }</div>
+        `
+        messages_container.appendChild(div);
+        div.scrollIntoView()
+    }
+    message_send_btn.addEventListener('click', send_message);
+    setInterval(load_messages, 2000);
+</script>
+
+
+</html>
