@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 540px;">
+    <h1 class="text-center pb-3">ChatDemo</h1>
+    <form action="." method="POST" enctype="multipart/form-data">
+        <h3>Enter Details to Create an Account.</h3>
+        {% csrf_token %}
+        {{ user_form | crispy }}
+        {{ user_profile_form | crispy }}
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Register">
+        </div>
+        <p class="py-2">Or <a href="{% url 'login' %}">Login</a> if you already have an account.</p>
+    </form>
+</div>
+{% endblock %}

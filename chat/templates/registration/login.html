@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 540px;">
+    <h1 class="text-center pb-3">ChatDemo</h1>
+    <form action="." method="POST">
+        <h3>Enter Details to Log In</h3>
+        {% csrf_token %}
+        {{ form | crispy }}
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Log In">
+        </div>
+        <p class="py-2">Or <a href="{% url 'register' %}">Register</a> if you do not have an account.</p>
+
+    </form>
+</div>
+{% endblock %}

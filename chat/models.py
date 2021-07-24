@@ -4,6 +4,12 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to="media/images/")
+
+    def __str__(self):
+        return self.user.username
 class Message(models.Model):
 
     sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)

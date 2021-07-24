@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class=" container py-5" style="max-width: 400px;">
+    <h2>Select a user to Chat with</h2>
+    <a class="btn btn-danger ml-auto" href="{% url 'logout' %}">Log Out</a>
+
+    <hr>
+    {% for user in users %}
+    <div class="contacts" data-username="{{ user.username }}">
+
+        <div class="pb-1 d-flex flex-row align-items-center ">
+            <div class="h-100">
+                
+                    <img style="width: 60px; height: 60px;" class="img-thumbnail rounded-circle"
+                        src="{{ user.profile.picture.url }}">
+                
+            </div>
+            <div class="card-body py-1">
+                <a href="{% url 'chatroom' user.pk %}" class="d-flex d-row-flex justify-content-between">
+                    <div class="info">
+                        <p class="font-large font-weight-bold color-primary f p-0 m-0">
+                            {{ user.username }}
+                        </p>
+                        
+                    </div>
+                    
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+   
+    <p>There are no users </p>
+    
+    {% endfor %}
+    <p class="d-none chat-empty-tag">No item matches your query</p>
+
+</div>
+{% endblock content %}
